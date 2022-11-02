@@ -2,17 +2,34 @@
   "name": "@linkcito/db",
   "version": "1.0.1",
   "description": "",
-  "main": "dist/index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "tsup",
+    "clean": "rimraf .turbo node_modules dist",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "dev": "tsup --watch",
+    "format": "prisma format",
+    "generate": "prisma generate",
+    "prebuild": "npm run generate",
+    "predev": "npm run generate",
+    "studio": "prisma studio"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^18.11.9",
     "prisma": "^4.5.0",
-    "typescript": "^4.8.4"
+    "tsup": "^6.3.0",
+    "typescript": "^4.8.4",
+    "@linkcito/tsconfig": "*"
   },
   "dependencies": {
     "@prisma/client": "^4.5.0"

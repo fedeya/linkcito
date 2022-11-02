@@ -1,9 +1,7 @@
 import { Command } from '../typings';
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { PrismaClient } from '@linkcito/db';
+import { prisma } from '@linkcito/db';
 import { getPreview, isURL } from '../utils';
-
-const prisma = new PrismaClient();
 
 const message: Record<string, string> = {
   es: 'link guardado!',

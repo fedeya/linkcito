@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "private": true,
+  "prisma": {
+    "schema": "packages/db/prisma/schema.prisma"
+  },
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -11,7 +14,8 @@
     "build": "turbo run build",
     "test": "turbo run test",
     "lint": "turbo run lint",
-    "dev": "turbo run dev"
+    "dev": "turbo run dev --parallel",
+    "generate": "turbo run generate"
   },
   "keywords": [],
   "author": "",

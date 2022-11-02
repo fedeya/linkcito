@@ -10,17 +10,39 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Guild {
+  id String @id
+
+  links Link[]
+  tags  Tag[]
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  name      String
+  guild     Guild    @relation(fields: [guildId], references: [id])
+  guildId   String
+
+  links Link[]
+
+  @@unique([name, guildId])
+}
+
 model Link {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
-  guildId   String
+
+  guild   Guild  @relation(fields: [guildId], references: [id])
+  guildId String
 
   url         String
   title       String?
   image       String?
   name        String?
   description String?
-  tags        String[]
+
+  tags Tag[]
 
   authorId String
   author   Author @relation(fields: [authorId], references: [id])
