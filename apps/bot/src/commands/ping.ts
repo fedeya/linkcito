@@ -1,15 +1,12 @@
 import { SlashCommandBuilder } from 'discord.js';
-import type { Command } from '../typings';
+import type { Command, CommandInteraction } from '../typings';
 
-const data = new SlashCommandBuilder();
-
-const pingCommand: Command = {
-  data: new SlashCommandBuilder()
+export default class PingCommand implements Command {
+  data = new SlashCommandBuilder()
     .setName('ping')
-    .setDescription('Replies with Pong!'),
-  execute: async interaction => {
+    .setDescription('Replies with Pong!');
+
+  async execute(interaction: CommandInteraction) {
     await interaction.reply('pong!');
   }
-};
-
-export default pingCommand;
+}

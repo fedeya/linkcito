@@ -1,15 +1,10 @@
-import { Command } from '../typings';
+import type { Command, CommandInteraction } from '../typings';
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { prisma } from '@linkcito/db';
 import { getPreview, isURL } from '../utils';
+import { createLink } from '../lib/api';
 
-const message: Record<string, string> = {
-  es: 'link guardado!',
-  'es-ES': 'link guardado!'
-};
-
-const SaveCommand: Command = {
-  data: new SlashCommandBuilder()
+export default class SaveCommand implements Command {
+  data = new SlashCommandBuilder()
     .setName('save')
     .setDescription('save link to database')
     .addStringOption(option =>
@@ -23,9 +18,9 @@ const SaveCommand: Command = {
     )
     .addBooleanOption(option =>
       option.setName('preview').setDescription('show link preview')
-    ),
+    );
 
-  execute: async interaction => {
+  async execute(interaction: CommandInteraction) {
     const link = interaction.options.get('link', true).value as string;
 
     if (!isURL(link)) {
@@ -36,7 +31,7 @@ const SaveCommand: Command = {
     const tags = (interaction.options.get('tags')?.value as string)?.split(' ');
     const showPreview = interaction.options.get('preview')?.value as boolean;
 
-    const content = message[interaction.locale] || 'saved link!';
+    const content = 'saved link!';
 
     const previewLink =
       link.includes('https') || link.includes('http')
@@ -52,28 +47,21 @@ const SaveCommand: Command = {
         ? preview.images[0]
         : null;
 
-    await prisma.link.create({
-      data: {
-        url: previewLink,
-        guildId: interaction.guildId as string,
-        tags,
-        description: preview.description,
-        image,
-        name: interaction.options.get('name')?.value as string,
-        title: preview.title,
-        author: {
-          connectOrCreate: {
-            where: {
-              discordId: interaction.user.id
-            },
-            create: {
-              discordId: interaction.user.id,
-              name: interaction.user.username,
-              image: interaction.user.avatarURL() as string
-            }
-          }
-        }
-      }
+    const guildId = interaction.guildId as string;
+
+    await createLink({
+      guildId,
+      url: previewLink,
+      tags,
+      user: {
+        id: interaction.user.id,
+        image: interaction.user.avatarURL(),
+        name: interaction.user.username
+      },
+      description: preview.description,
+      image,
+      name: interaction.options.get('name')?.value as string,
+      title: preview.title
     });
 
     if (showPreview) {
@@ -88,12 +76,10 @@ const SaveCommand: Command = {
         })
         .setImage(image);
 
-      interaction.reply({ content, embeds: [embed] });
+      await interaction.reply({ content, embeds: [embed] });
       return;
     }
 
     await interaction.reply({ content });
   }
-};
-
-export default SaveCommand;
+}

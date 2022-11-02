@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/glob": "^8.0.0",
     "@types/node": "^18.11.9",
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
@@ -19,6 +20,7 @@
     "@linkcito/db": "*",
     "discord.js": "^14.6.0",
     "dotenv": "^16.0.3",
+    "glob": "^8.0.3",
     "link-preview-js": "^3.0.4"
   }
 }
