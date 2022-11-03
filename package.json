@@ -23,5 +23,8 @@
   "packageManager": "pnpm@7.14.0",
   "devDependencies": {
     "turbo": "^1.6.3"
+  },
+  "engines": {
+    "node": ">=16.6.0"
   }
 }
