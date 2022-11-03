@@ -7,17 +7,7 @@ import {
   useSearchParams,
   useSubmit
 } from '@remix-run/react';
-import clsx from 'clsx';
-import {
-  Button,
-  Container,
-  Card,
-  Grid,
-  Text,
-  Row,
-  Image,
-  styled
-} from '@nextui-org/react';
+import { Button, Container, Grid, Text, styled } from '@nextui-org/react';
 import LinkCard from '~/components/LinkCard';
 
 export const loader = async ({ params, request }: LoaderArgs) => {
@@ -64,7 +54,7 @@ export default function GuildPage() {
   const tagParam = params.get('tag') ?? '';
 
   return (
-    <Container fluid>
+    <Container css={{ width: '100%' }} fluid>
       <Text
         h1
         size={60}
@@ -81,32 +71,6 @@ export default function GuildPage() {
 
       <div>
         <Form onChange={e => submit(e.currentTarget)}>
-          {/* <fieldset className="flex gap-4 flex-wrap">
-            {guild.tags.map(tag => (
-              <label
-                className={clsx(
-                  'rounded-md cursor-pointer appearance-none shadow transition-all hover:opacity-80 ease-in font-medium px-4 py-2',
-                  {
-                    'bg-primary text-quaternary':
-                      params.get('tag') === tag.name,
-                    'bg-quaternary text-primary': params.get('tag') !== tag.name
-                  }
-                )}
-                key={tag.id}
-              >
-                <span>#{tag.name}</span>
-
-                <input
-                  className="appearance-none"
-                  name="tag"
-                  type="radio"
-                  checked={tagParam === tag.name}
-                  value={tag.name}
-                />
-              </label>
-            ))}
-          </fieldset> */}
-
           <Box
             css={{
               display: 'flex',
@@ -131,11 +95,6 @@ export default function GuildPage() {
               </Button>
             ))}
           </Box>
-          {/* 
-            <select defaultValue={view} name="view">
-              <option value="cards">Cards View</option>
-              <option value="list">List View</option>
-            </select> */}
         </Form>
 
         {view === 'list' && (
