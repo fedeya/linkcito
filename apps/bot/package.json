@@ -27,5 +27,8 @@
     "dotenv": "^16.0.3",
     "glob": "^8.0.3",
     "link-preview-js": "^3.0.4"
+  },
+  "engines": {
+    "node": ">=16.6.0"
   }
 }
