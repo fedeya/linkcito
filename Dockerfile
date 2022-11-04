@@ -1,9 +1,8 @@
 # create node dockerfile
-FROM node:16-alpine
+FROM node:16-slim
 
-RUN apk add --no-cache git
-RUN apk add --no-cache libc6-compat
-
+RUN apt-get update
+RUN apt-get install -y openssl git libc6
 
 RUN npm install -g pnpm
 
@@ -16,8 +15,9 @@ COPY . .
 RUN pnpm install
 
 RUN npx turbo run build --filter=bot
+RUN pnpm generate
 
-RUN cd ./apps/bot
+WORKDIR /app/apps/bot
 
 env NODE_ENV=production
 
