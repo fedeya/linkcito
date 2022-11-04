@@ -2,7 +2,7 @@ services:
   bot:
     build: .
     depends_on:
-      - db
+      - postgres
     restart: always
     environment:
       DATABASE_URL: 'postgres://postgres:postgres@postgres:5432/postgres'
