@@ -1,7 +1,7 @@
 import { prisma } from '@linkcito/db';
 
 interface CreateLinkPayload {
-  tags: string[];
+  tags?: string[];
   url: string;
   title?: string;
   description?: string;
@@ -34,7 +34,7 @@ export const createLink = async (payload: CreateLinkPayload) => {
       url,
       guild,
       tags: {
-        connectOrCreate: tags.map(tag => ({
+        connectOrCreate: tags?.map(tag => ({
           create: {
             name: tag,
             guild
