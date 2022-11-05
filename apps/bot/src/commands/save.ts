@@ -50,8 +50,18 @@ export default class SaveCommand implements Command {
     const guildId = interaction.guildId as string;
 
     await createLink({
-      guildId,
+      guild: {
+        id: guildId,
+        name: interaction.guild?.name || '',
+        image: interaction.guild?.iconURL()
+      },
       url: previewLink,
+      icon:
+        preview.favicons &&
+        Array.isArray(preview.favicons) &&
+        preview.favicons.length > 0
+          ? preview.favicons[0]
+          : null,
       tags,
       user: {
         id: interaction.user.id,

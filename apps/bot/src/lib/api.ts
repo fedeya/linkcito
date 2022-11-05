@@ -3,9 +3,14 @@ import { prisma } from '@linkcito/db';
 interface CreateLinkPayload {
   tags?: string[];
   url: string;
+  icon?: string | null;
   title?: string;
   description?: string;
-  guildId: string;
+  guild: {
+    id: string;
+    name: string;
+    image?: string | null;
+  };
   image?: string | null;
   name?: string;
   user: {
@@ -16,15 +21,18 @@ interface CreateLinkPayload {
 }
 
 export const createLink = async (payload: CreateLinkPayload) => {
-  const { url, guildId, tags, title, description, name, image, user } = payload;
+  const { url, guild, tags, title, description, name, image, user, icon } =
+    payload;
 
-  const guild = {
+  const newGuild = {
     connectOrCreate: {
       create: {
-        id: guildId
+        id: guild.id,
+        name: guild.name,
+        image: guild.image || null
       },
       where: {
-        id: guildId
+        id: guild.id
       }
     }
   };
@@ -32,21 +40,22 @@ export const createLink = async (payload: CreateLinkPayload) => {
   await prisma.link.create({
     data: {
       url,
-      guild,
+      guild: newGuild,
       tags: {
         connectOrCreate: tags?.map(tag => ({
           create: {
             name: tag,
-            guild
+            guild: newGuild
           },
           where: {
             name_guildId: {
-              guildId,
+              guildId: guild.id,
               name: tag
             }
           }
         }))
       },
+      icon: icon || null,
       description,
       image,
       name,
