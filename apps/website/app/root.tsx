@@ -1,4 +1,4 @@
-import type { MetaFunction } from '@remix-run/node';
+import type { LinksFunction, MetaFunction } from '@remix-run/node';
 import {
   Links,
   LiveReload,
@@ -7,7 +7,8 @@ import {
   Scripts,
   ScrollRestoration
 } from '@remix-run/react';
-import { NextUIProvider, createTheme } from '@nextui-org/react';
+import styles from '~/styles/tailwind.css';
+import Layout from './components/Layout';
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
@@ -15,9 +16,25 @@ export const meta: MetaFunction = () => ({
   viewport: 'width=device-width,initial-scale=1'
 });
 
-const theme = createTheme({
-  type: 'light'
-});
+export const links: LinksFunction = () => [
+  {
+    rel: 'stylesheet',
+    href: styles
+  },
+  {
+    rel: 'preconnect',
+    href: 'https://fonts.googleapis.com'
+  },
+  {
+    rel: 'preconnect',
+    href: 'https://fonts.gstatic.com',
+    crossOrigin: 'anonymous'
+  },
+  {
+    href: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap',
+    rel: 'stylesheet'
+  }
+];
 
 export default function App() {
   return (
@@ -27,9 +44,9 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <NextUIProvider theme={theme}>
+        <Layout>
           <Outlet />
-        </NextUIProvider>
+        </Layout>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

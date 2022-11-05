@@ -7,8 +7,8 @@ import {
   useSearchParams,
   useSubmit
 } from '@remix-run/react';
-import { Button, Container, Grid, Text, styled } from '@nextui-org/react';
-import LinkCard from '~/components/LinkCard';
+import LinkItem from '~/components/LinkItem';
+import { cn } from '~/lib/utils';
 
 export const loader = async ({ params, request }: LoaderArgs) => {
   const url = new URL(request.url);
@@ -29,7 +29,13 @@ export const loader = async ({ params, request }: LoaderArgs) => {
         },
         take: 40,
         include: {
-          tags: true
+          tags: true,
+          author: {
+            select: {
+              name: true,
+              image: true
+            }
+          }
         }
       }
     }
@@ -42,96 +48,52 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   });
 };
 
-const Box = styled('div');
-
 export default function GuildPage() {
   const { guild } = useLoaderData<typeof loader>();
 
   const submit = useSubmit();
   const [params] = useSearchParams();
 
-  const view = params.get('view') ?? 'cards';
   const tagParam = params.get('tag') ?? '';
 
   return (
-    <Container css={{ width: '100%' }} fluid>
-      <Text
-        h1
-        size={60}
-        css={{
-          textGradient: '45deg, $blue600 -20%, $pink600 50%',
-          textAlign: 'center',
-          mt: 20,
-          mb: 30
-        }}
-        weight="bold"
-      >
-        #Linkcitos
-      </Text>
+    <div>
+      <div className="py-4 px-2">
+        <h1 className="text-center text-3xl mb-4 text-white font-semibold">
+          Dashboard
+        </h1>
 
-      <div>
-        <Form onChange={e => submit(e.currentTarget)}>
-          <Box
-            css={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: '10px',
-              mb: 20,
-              justifyContent: 'center'
-            }}
-          >
+        <Form className="mb-4" onChange={e => submit(e.currentTarget)}>
+          <fieldset className="flex items-center gap-4 justify-center">
             {guild.tags.map(tag => (
-              <Button
-                type="submit"
-                name="tag"
-                value={tagParam === tag.name ? '' : tag.name}
-                shadow
-                color={tagParam === tag.name ? 'primary' : 'secondary'}
-                flat
-                auto
+              <label
+                className={cn(
+                  'rounded-md cursor-pointer shadow hover:opacity-70 px-4 py-2 bg-[#141432] text-gray',
+                  {
+                    'bg-accent': tagParam === tag.name
+                  }
+                )}
                 key={tag.id}
               >
-                #{tag.name}
-              </Button>
+                <span>#{tag.name}</span>
+                <input
+                  className="appearance-none"
+                  type="radio"
+                  name="tag"
+                  value={tagParam === tag.name ? '' : tag.name}
+                  defaultChecked={tagParam === tag.name}
+                />
+              </label>
             ))}
-          </Box>
+          </fieldset>
         </Form>
 
-        {view === 'list' && (
-          <div className="mt-4">
-            {guild.links.map(link => (
-              <div key={link.id} className="flex gap-2">
-                <p className="text-primary">{link.name ?? link.title}</p>
-
-                <a
-                  href={link.url}
-                  className="underline text-secondary"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {link.url}
-                </a>
-
-                <div className="flex gap-2">
-                  {link.tags.map(tag => (
-                    <span key={tag.id} className="text-secondary">
-                      #{tag.name}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {view === 'cards' && (
-          <Grid.Container gap={4} justify="center">
-            {guild.links.map(link => (
-              <LinkCard key={link.id} link={link as any} />
-            ))}
-          </Grid.Container>
-        )}
+        <div className="w-full space-y-4 max-w-5xl mx-auto">
+          {guild.links.map(link => (
+            <LinkItem key={link.id} link={link as any} />
+          ))}
+        </div>
       </div>
-    </Container>
+    </div>
   );
 }

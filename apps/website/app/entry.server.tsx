@@ -1,4 +1,3 @@
-import { getCssText } from '@nextui-org/react';
 import type { EntryContext } from '@remix-run/node';
 import { RemixServer } from '@remix-run/react';
 import { renderToString } from 'react-dom/server';
@@ -11,7 +10,7 @@ export default function handleRequest(
 ) {
   const markup = renderToString(
     <RemixServer context={remixContext} url={request.url} />
-  ).replace(/<\/head>/, `<style id="stitches">${getCssText()}</style></head>`);
+  );
 
   responseHeaders.set('Content-Type', 'text/html');
 
