@@ -13,6 +13,9 @@ datasource db {
 model Guild {
   id String @id
 
+  image String?
+  name  String
+
   links Link[]
   tags  Tag[]
 }
@@ -36,6 +39,7 @@ model Link {
   guild   Guild  @relation(fields: [guildId], references: [id])
   guildId String
 
+  icon        String?
   url         String
   title       String?
   image       String?
