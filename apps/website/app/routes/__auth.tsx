@@ -57,7 +57,7 @@ export default function AuthLayout() {
         <header className="h-16">
           <nav className="flex justify-between max-w-6xl mx-auto items-center">
             <Link
-              to="/dashboard"
+              to="/my-links"
               className="text-white text-lg flex-1 justify-start"
             >
               <span className="text-xs text-slate-500">https://</span>
