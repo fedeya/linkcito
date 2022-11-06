@@ -1,4 +1,4 @@
-import type { LoaderArgs } from '@remix-run/node';
+import type { LoaderArgs, MetaFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { auth } from '~/lib/auth.server';
 import { prisma } from '~/db.server';
@@ -37,13 +37,15 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   const guilds = await getUserGuilds(user);
 
-  console.log(guilds);
-
   return json({
     author,
     guilds
   });
 };
+
+export const meta: MetaFunction = () => ({
+  title: 'My Links - Linkcito'
+});
 
 export default function Dashboard() {
   const { author } = useLoaderData<typeof loader>();
