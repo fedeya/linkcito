@@ -19,6 +19,6 @@ RUN pnpm generate
 
 WORKDIR /app/apps/bot
 
-env NODE_ENV=production
+ENV NODE_ENV=production
 
 CMD cd ../../packages/db && pnpm run db:migrate:deploy; cd ../../apps/bot && pnpm start
