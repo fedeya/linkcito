@@ -1,4 +1,4 @@
-import { Link } from '@remix-run/react';
+import { Form, Link } from '@remix-run/react';
 import type { FC, ReactElement } from 'react';
 import { HiHeart } from 'react-icons/hi';
 
@@ -13,11 +13,11 @@ const Layout: FC<{ children: ReactElement }> = ({ children }) => {
             <span className="text-xs text-slate-500">.com</span>
           </Link>
 
-          <div>
+          <Form method="post" action="/auth/discord">
             <button className="bg-action shadow-md flex-1 justify-end hover:opacity-70 rounded-md px-4 py-2 font-medium text-white">
               Login
             </button>
-          </div>
+          </Form>
         </nav>
       </header>
 

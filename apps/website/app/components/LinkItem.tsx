@@ -6,7 +6,7 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 type LinkItemProps = {
   link: Partial<Link> & {
     tags: Partial<Tag>[];
-    author: Pick<Author, 'name' | 'image'>;
+    author?: Pick<Author, 'name' | 'image'>;
   };
 };
 
@@ -47,30 +47,32 @@ const LinkItem: FC<LinkItemProps> = ({ link }) => {
       <div className="flex items-center gap-2">
         {/* 5 <HiHeart className="text-action" /> */}
 
-        <Tooltip.Provider>
-          <Tooltip.Root>
-            <Tooltip.Trigger asChild>
-              {link.author.image && (
-                <img
-                  src={link.author.image}
-                  alt={link.author.name}
-                  width="24px"
-                  height="24px"
-                  className="w-6 h-6 rounded-full object-cover"
-                />
-              )}
-            </Tooltip.Trigger>
-            <Tooltip.Portal>
-              <Tooltip.Content
-                side="bottom"
-                className="bg-primary-600 text-gray rounded-md min-w-[60px] flex items-center justify-center p-2"
-              >
-                <p>{link.author.name}</p>
-                <Tooltip.Arrow className="fill-primary-600" />
-              </Tooltip.Content>
-            </Tooltip.Portal>
-          </Tooltip.Root>
-        </Tooltip.Provider>
+        {link.author && (
+          <Tooltip.Provider>
+            <Tooltip.Root>
+              <Tooltip.Trigger asChild>
+                {link.author?.image && (
+                  <img
+                    src={link.author.image}
+                    alt={link.author.name}
+                    width="24px"
+                    height="24px"
+                    className="w-6 h-6 rounded-full object-cover"
+                  />
+                )}
+              </Tooltip.Trigger>
+              <Tooltip.Portal>
+                <Tooltip.Content
+                  side="bottom"
+                  className="bg-primary-600 text-gray rounded-md min-w-[60px] flex items-center justify-center p-2"
+                >
+                  <p>{link.author?.name}</p>
+                  <Tooltip.Arrow className="fill-primary-600" />
+                </Tooltip.Content>
+              </Tooltip.Portal>
+            </Tooltip.Root>
+          </Tooltip.Provider>
+        )}
       </div>
     </div>
   );
