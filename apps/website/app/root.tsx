@@ -9,12 +9,15 @@ import {
   useCatch
 } from '@remix-run/react';
 import styles from '~/styles/tailwind.css';
+import { inject } from '@vercel/analytics';
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
   title: 'Linkcito',
   viewport: 'width=device-width,initial-scale=1'
 });
+
+inject();
 
 export const links: LinksFunction = () => [
   {
@@ -60,6 +63,7 @@ export default function App() {
 
 export function CatchBoundary() {
   const caught = useCatch();
+
   return (
     <html>
       <head>
