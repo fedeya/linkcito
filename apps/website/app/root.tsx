@@ -18,6 +18,11 @@ export const meta: MetaFunction = () => ({
 
 export const links: LinksFunction = () => [
   {
+    rel: 'icon',
+    type: 'image/png',
+    href: '/favicon.png'
+  },
+  {
     rel: 'stylesheet',
     href: styles
   },
