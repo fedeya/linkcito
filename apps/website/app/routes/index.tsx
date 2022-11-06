@@ -8,7 +8,7 @@ export default function Index() {
           Do not waste the important <br /> resources of your server!
         </h1>
 
-        <ul className="space-y-2">
+        <ul className="flex flex-col sm:flex-row sm:items-center gap-4">
           <li className="flex gap-2 items-center">
             <HiCheck className="text-green-500" /> Tags
           </li>

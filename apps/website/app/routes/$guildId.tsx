@@ -1,4 +1,4 @@
-import type { LoaderArgs } from '@remix-run/node';
+import type { LinksFunction, LoaderArgs, MetaFunction } from '@remix-run/node';
 import { json, Response } from '@remix-run/node';
 import { prisma } from '~/db.server';
 import {
@@ -61,6 +61,12 @@ export const loader = async ({ params, request }: LoaderArgs) => {
       }
     }
   );
+};
+
+export const meta: MetaFunction<typeof loader> = ({ data }) => {
+  return {
+    title: `${data.guild.name} - Linkcito`
+  };
 };
 
 export default function GuildPage() {
