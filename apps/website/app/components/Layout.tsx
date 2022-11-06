@@ -1,3 +1,4 @@
+import { Link } from '@remix-run/react';
 import type { FC, ReactElement } from 'react';
 import { HiHeart } from 'react-icons/hi';
 
@@ -6,11 +7,11 @@ const Layout: FC<{ children: ReactElement }> = ({ children }) => {
     <div className="font-sans">
       <header className="bg-primary h-16">
         <nav className="w-full max-w-7xl mx-auto flex items-center justify-between p-4">
-          <a href="/" className="text-white text-lg flex-1 justify-start">
+          <Link to="/" className="text-white text-lg flex-1 justify-start">
             <span className="text-xs text-slate-500">https://</span>
             <span className="font-bold">Linkcito</span>
             <span className="text-xs text-slate-500">.com</span>
-          </a>
+          </Link>
 
           <div>
             <button className="bg-action shadow-md flex-1 justify-end hover:opacity-70 rounded-md px-4 py-2 font-medium text-white">
