@@ -35,7 +35,7 @@ const LinkItem: FC<LinkItemProps> = ({ link }) => {
           <HiExternalLink />
         </a>
 
-        <div className="hidden sm:flex">
+        <div className="hidden gap-2 sm:flex">
           {link.tags.map(tag => (
             <span className="text-slate-400" key={tag.id}>
               #{tag.name}

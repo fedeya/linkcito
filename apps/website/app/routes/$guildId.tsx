@@ -5,7 +5,8 @@ import {
   useLoaderData,
   Form,
   useSearchParams,
-  useSubmit
+  useSubmit,
+  useTransition
 } from '@remix-run/react';
 import LinkItem from '~/components/LinkItem';
 import { cn } from '~/lib/utils';
@@ -13,17 +14,20 @@ import { cn } from '~/lib/utils';
 export const loader = async ({ params, request }: LoaderArgs) => {
   const url = new URL(request.url);
 
-  const tag = url.searchParams.get('tag');
+  const tags = url.searchParams.getAll('tag');
 
-  const where = tag
-    ? {
-        tags: {
-          some: {
-            name: tag.toString() || undefined
+  const where =
+    tags && tags.length > 0
+      ? {
+          tags: {
+            some: {
+              name: {
+                in: tags
+              }
+            }
           }
         }
-      }
-    : undefined;
+      : undefined;
 
   const guild = await prisma.guild.findUnique({
     where: { id: params.guildId },
@@ -47,18 +51,29 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 
   if (!guild) throw new Response('Not found', { status: 404 });
 
-  return json({
-    guild
-  });
+  return json(
+    {
+      guild
+    },
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=120, stale-while-revalidate'
+      }
+    }
+  );
 };
 
 export default function GuildPage() {
   const { guild } = useLoaderData<typeof loader>();
+  const transition = useTransition();
 
   const submit = useSubmit();
   const [params] = useSearchParams();
 
-  const tagParam = params.get('tag') ?? '';
+  const tags =
+    transition.state === 'submitting'
+      ? transition.submission.formData.getAll('tag')
+      : params.getAll('tag');
 
   return (
     <div>
@@ -83,7 +98,7 @@ export default function GuildPage() {
                 className={cn(
                   'rounded-md cursor-pointer shadow hover:opacity-70 px-4 py-2 bg-[#141432] text-gray',
                   {
-                    'bg-accent': tagParam === tag.name
+                    'bg-accent': tags.includes(tag.name)
                   }
                 )}
                 key={tag.id}
@@ -91,10 +106,10 @@ export default function GuildPage() {
                 <span>#{tag.name}</span>
                 <input
                   className="appearance-none"
-                  type="radio"
+                  type="checkbox"
                   name="tag"
-                  value={tagParam === tag.name ? '' : tag.name}
-                  defaultChecked={tagParam === tag.name}
+                  value={tag.name}
+                  defaultChecked={tags.includes(tag.name)}
                 />
               </label>
             ))}
@@ -102,9 +117,20 @@ export default function GuildPage() {
         </Form>
 
         <div className="w-full space-y-4 max-w-5xl mx-auto">
-          {guild.links.map(link => (
-            <LinkItem key={link.id} link={link as any} />
-          ))}
+          {transition.state === 'idle' &&
+            guild.links.map(link => (
+              <LinkItem key={link.id} link={link as any} />
+            ))}
+
+          {transition.state === 'submitting' &&
+            new Array(guild.links.length === 0 ? 5 : guild.links.length)
+              .fill(1)
+              .map((_, i) => (
+                <div
+                  key={i}
+                  className="h-12 w-full rounded-md bg-secondary animate-pulse"
+                />
+              ))}
         </div>
       </div>
     </div>
