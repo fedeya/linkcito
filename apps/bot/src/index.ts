@@ -9,6 +9,7 @@ import { Client as IClient, Command } from './typings';
 import path from 'node:path';
 import { config } from 'dotenv';
 import glob from 'glob';
+import { prisma } from '@linkcito/db';
 
 config({
   path: path.join(__dirname, '..', '..', '..', '.env')
@@ -60,28 +61,66 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
   }
 })();
 
+client.on('guildCreate', async guild => {
+  console.log('Created guild', guild.name, guild.id);
+
+  await prisma.guild.create({
+    data: {
+      id: guild.id,
+      name: guild.name,
+      image: guild.iconURL() || null
+    }
+  });
+});
+
 client.on('ready', () => {
   console.log('Successfully logged as', client.user?.tag);
 });
 
 client.on('interactionCreate', async interaction => {
-  if (!interaction.isChatInputCommand()) return;
+  if (interaction.isChatInputCommand()) {
+    const client = interaction.client as IClient;
 
-  const client = interaction.client as IClient;
+    const command = client.commands?.get(interaction.commandName);
 
-  const command = client.commands?.get(interaction.commandName);
+    if (!command) {
+      console.error(
+        `No command matching ${interaction.commandName} was found.`
+      );
+      return;
+    }
 
-  if (!command) {
-    console.error(`No command matching ${interaction.commandName} was found.`);
-    return;
+    try {
+      await command.execute(interaction);
+    } catch (error) {
+      console.error(error);
+      await interaction.reply({
+        content: 'There was an error while executing this command!',
+        ephemeral: true
+      });
+    }
   }
 
-  try {
-    await command.execute(interaction);
-  } catch (error) {
-    console.error(error);
+  if (interaction.isSelectMenu()) {
+    console.log(interaction.customId, interaction.values);
+
+    const linkId = interaction.customId;
+
+    await prisma.link.update({
+      where: {
+        id: linkId
+      },
+      data: {
+        tags: {
+          connect: interaction.values.map(value => ({
+            id: value
+          }))
+        }
+      }
+    });
+
     await interaction.reply({
-      content: 'There was an error while executing this command!',
+      content: 'Tags saved!',
       ephemeral: true
     });
   }

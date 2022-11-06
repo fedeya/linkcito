@@ -10,6 +10,12 @@ type LinkItemProps = {
   };
 };
 
+// get url domain
+function getDomain(url: string) {
+  const domain = new URL(url).hostname;
+  return domain.startsWith('www.') ? domain.slice(4) : domain;
+}
+
 const LinkItem: FC<LinkItemProps> = ({ link }) => {
   return (
     <div className="w-full justify-between shadow-md bg-secondary flex items-center gap-4 p-4 rounded-lg">
@@ -30,7 +36,7 @@ const LinkItem: FC<LinkItemProps> = ({ link }) => {
           rel="noopener noreferrer"
           className="text-action flex gap-1 items-center"
         >
-          {link.url}
+          {link.url && getDomain(link.url)}
 
           <HiExternalLink />
         </a>
@@ -51,7 +57,7 @@ const LinkItem: FC<LinkItemProps> = ({ link }) => {
           <Tooltip.Provider>
             <Tooltip.Root>
               <Tooltip.Trigger asChild>
-                {link.author?.image && (
+                {link.author?.image ? (
                   <img
                     src={link.author.image}
                     alt={link.author.name}
@@ -59,12 +65,16 @@ const LinkItem: FC<LinkItemProps> = ({ link }) => {
                     height="24px"
                     className="w-6 h-6 rounded-full object-cover"
                   />
+                ) : (
+                  <div className="w-6 h-6 font-medium rounded-full flex items-center cursor-default justify-center text-xs bg-primary-600">
+                    {link.author.name[0]}
+                  </div>
                 )}
               </Tooltip.Trigger>
               <Tooltip.Portal>
                 <Tooltip.Content
                   side="bottom"
-                  className="bg-primary-600 text-gray rounded-md min-w-[60px] flex items-center justify-center p-2"
+                  className="bg-primary-600 text-gray px-4 rounded-md min-w-[60px] flex items-center justify-center py-2"
                 >
                   <p>{link.author?.name}</p>
                   <Tooltip.Arrow className="fill-primary-600" />

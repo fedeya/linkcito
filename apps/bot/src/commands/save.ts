@@ -1,7 +1,13 @@
 import type { Command, CommandInteraction } from '../typings';
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  SelectMenuBuilder
+} from 'discord.js';
 import { getPreview, isURL } from '../utils';
 import { createLink } from '../lib/api';
+import { prisma } from '@linkcito/db';
 
 export default class SaveCommand implements Command {
   data = new SlashCommandBuilder()
@@ -28,7 +34,7 @@ export default class SaveCommand implements Command {
       return;
     }
 
-    const tags = (interaction.options.get('tags')?.value as string)?.split(' ');
+    // const tags = (interaction.options.get('tags')?.value as string)?.split(' ');
     const showPreview = interaction.options.get('preview')?.value as boolean;
 
     const content = 'saved link!';
@@ -40,6 +46,8 @@ export default class SaveCommand implements Command {
 
     const preview = await getPreview(previewLink);
 
+    await interaction.deferReply({ ephemeral: true });
+
     const image =
       preview.images &&
       Array.isArray(preview.images) &&
@@ -49,7 +57,7 @@ export default class SaveCommand implements Command {
 
     const guildId = interaction.guildId as string;
 
-    await createLink({
+    const id = await createLink({
       guild: {
         id: guildId,
         name: interaction.guild?.name || '',
@@ -62,7 +70,6 @@ export default class SaveCommand implements Command {
         preview.favicons.length > 0
           ? preview.favicons[0]
           : null,
-      tags,
       user: {
         id: interaction.user.id,
         image:
@@ -74,6 +81,29 @@ export default class SaveCommand implements Command {
       name: interaction.options.get('name')?.value as string,
       title: preview.title
     });
+
+    const tags = await prisma.tag.findMany({ where: { guildId } });
+
+    let components: any[] = [];
+
+    if (tags.length !== 0) {
+      console.log(tags);
+
+      const select = new SelectMenuBuilder()
+        .setCustomId(id)
+        .setMinValues(1)
+        .setPlaceholder('Select tags')
+        .addOptions(
+          tags.map(tag => ({
+            label: tag.name,
+            value: tag.id
+          }))
+        );
+
+      const row = new ActionRowBuilder().addComponents(select);
+
+      components.push(row);
+    }
 
     if (showPreview) {
       const embed = new EmbedBuilder()
@@ -87,10 +117,17 @@ export default class SaveCommand implements Command {
         })
         .setImage(image);
 
-      await interaction.reply({ content, embeds: [embed] });
+      await interaction.editReply({
+        content,
+        embeds: [embed],
+        components
+      });
       return;
     }
 
-    await interaction.reply({ content });
+    await interaction.editReply({
+      content,
+      components
+    });
   }
 }

@@ -5,7 +5,7 @@ export let loader: LoaderFunction = async ({ request, context }) => {
   console.log('callback');
 
   return await auth.authenticate('discord', request, {
-    successRedirect: '/dashboard',
+    successRedirect: '/my-links',
     failureRedirect: '/',
     context
   });

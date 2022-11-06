@@ -4,6 +4,7 @@ import { auth } from '~/lib/auth.server';
 import { prisma } from '~/db.server';
 import { useLoaderData } from '@remix-run/react';
 import LinkItem from '~/components/LinkItem';
+import { getUserGuilds } from '~/models/guild';
 
 export const loader = async ({ request }: LoaderArgs) => {
   const user = await auth.isAuthenticated(request, {
@@ -12,7 +13,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   const author = await prisma.author.findUnique({
     where: {
-      discordId: user.id
+      discordId: user.profile.id
     },
     include: {
       links: {
@@ -34,8 +35,13 @@ export const loader = async ({ request }: LoaderArgs) => {
     }
   });
 
+  const guilds = await getUserGuilds(user);
+
+  console.log(guilds);
+
   return json({
-    author
+    author,
+    guilds
   });
 };
 
@@ -44,17 +50,19 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1 className="text-center text-3xl font-bold text-white mb-4">
-        My Links
-      </h1>
+      <div>
+        <h1 className="text-center text-3xl font-bold text-white mb-4">
+          My Links
+        </h1>
 
-      <div className="max-w-6xl mx-auto flex flex-col gap-4">
-        {author?.links.map(link => (
-          <LinkItem
-            key={link.id}
-            link={{ ...link, author: link.guild } as any}
-          />
-        ))}
+        <div className="max-w-6xl mx-auto flex flex-col gap-4">
+          {author?.links.map(link => (
+            <LinkItem
+              key={link.id}
+              link={{ ...link, author: link.guild } as any}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

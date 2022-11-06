@@ -1,12 +1,12 @@
 import { Authenticator } from 'remix-auth';
-import type { DiscordProfile } from 'remix-auth-discord';
 import { DiscordStrategy } from 'remix-auth-discord';
 
 import { sessionStorage } from '~/lib/session.server';
+import type { User } from '~/models/user';
 // import type { User } from "~/models/user.model";
 // import { getUserByEmail } from "~/models/user.model";
 
-export const auth = new Authenticator<DiscordProfile>(sessionStorage);
+export const auth = new Authenticator<User>(sessionStorage);
 
 const discordStrategy = new DiscordStrategy(
   {
@@ -16,9 +16,16 @@ const discordStrategy = new DiscordStrategy(
     // Provide all the scopes you want as an array
     scope: ['identify', 'email', 'guilds']
   },
-  async ({ profile }) => {
+  async ({ profile, accessToken }) => {
     // Get the user data from your DB or API using the tokens and profile
-    return profile;
+    return {
+      profile: {
+        id: profile.id,
+        name: profile.displayName,
+        email: profile.emails ? profile.emails[0].value : ''
+      },
+      accessToken
+    };
   }
 );
 

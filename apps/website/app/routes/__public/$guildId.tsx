@@ -142,3 +142,13 @@ export default function GuildPage() {
     </div>
   );
 }
+
+export function CatchBoundary() {
+  return (
+    <div>
+      <h1 className="text-3xl md:text-4xl text-white font-semibold">
+        Oops, something went wrong
+      </h1>
+    </div>
+  );
+}

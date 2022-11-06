@@ -7,6 +7,6 @@ export const loader: LoaderFunction = () => redirect('/');
 
 export const action: ActionFunction = async ({ request }) => {
   return await auth.authenticate('discord', request, {
-    successRedirect: '/dashboard'
+    successRedirect: '/my-links'
   });
 };

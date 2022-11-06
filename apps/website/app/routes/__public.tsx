@@ -1,8 +1,8 @@
-import { Form, Link } from '@remix-run/react';
-import type { FC, ReactElement } from 'react';
+import { Link, Form, Outlet } from '@remix-run/react';
 import { HiHeart } from 'react-icons/hi';
+import Button from '~/components/Button';
 
-const Layout: FC<{ children: ReactElement }> = ({ children }) => {
+export default function PublicLayout() {
   return (
     <div className="font-sans">
       <header className="bg-primary h-16">
@@ -14,15 +14,13 @@ const Layout: FC<{ children: ReactElement }> = ({ children }) => {
           </Link>
 
           <Form method="post" action="/auth/discord">
-            <button className="bg-action shadow-md flex-1 justify-end hover:opacity-70 rounded-md px-4 py-2 font-medium text-white">
-              Login
-            </button>
+            <Button>Login</Button>
           </Form>
         </nav>
       </header>
 
       <main className="min-h-[calc(100vh-80px-64px)] bg-primary text-gray">
-        {children}
+        <Outlet />
       </main>
 
       <footer className="text-center py-4 flex justify-center h-[80px] bg-secondary text-gray">
@@ -41,6 +39,4 @@ const Layout: FC<{ children: ReactElement }> = ({ children }) => {
       </footer>
     </div>
   );
-};
-
-export default Layout;
+}
