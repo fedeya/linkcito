@@ -14,6 +14,14 @@ const LinkItem: FC<LinkItemProps> = ({ link }) => {
   return (
     <div className="w-full justify-between shadow-md bg-secondary flex items-center gap-4 p-4 rounded-lg">
       <div className="flex items-center gap-4">
+        {link.icon && (
+          <img
+            src={link.icon}
+            alt={link.title ?? ''}
+            className="object-cover rounded-lg w-6 h-6"
+          />
+        )}
+
         <p className="font-medium">{link.name ?? link.title}</p>
 
         <a

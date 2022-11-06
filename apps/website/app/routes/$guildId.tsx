@@ -15,19 +15,23 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 
   const tag = url.searchParams.get('tag');
 
+  const where = tag
+    ? {
+        tags: {
+          some: {
+            name: tag.toString() || undefined
+          }
+        }
+      }
+    : undefined;
+
   const guild = await prisma.guild.findUnique({
     where: { id: params.guildId },
     include: {
       tags: true,
       links: {
-        where: {
-          tags: {
-            some: {
-              name: tag?.toString() || undefined
-            }
-          }
-        },
         take: 40,
+        where,
         include: {
           tags: true,
           author: {
@@ -59,9 +63,18 @@ export default function GuildPage() {
   return (
     <div>
       <div className="py-4 px-2">
-        <h1 className="text-center text-3xl mb-4 text-white font-semibold">
-          Dashboard
-        </h1>
+        <div className="flex items-center mb-4 gap-4 justify-center">
+          {guild.image && (
+            <img
+              src={guild.image}
+              alt={guild.name}
+              className="h-16 w-16 rounded-lg shadow-md object-cover"
+            />
+          )}
+          <h1 className="text-3xl md:text-4xl text-white font-semibold">
+            {guild.name}
+          </h1>
+        </div>
 
         <Form className="mb-4" onChange={e => submit(e.currentTarget)}>
           <fieldset className="flex items-center gap-4 justify-center">

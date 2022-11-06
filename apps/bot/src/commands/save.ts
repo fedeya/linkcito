@@ -65,8 +65,9 @@ export default class SaveCommand implements Command {
       tags,
       user: {
         id: interaction.user.id,
-        image: interaction.user.avatarURL(),
-        name: interaction.user.username
+        image:
+          interaction.user.avatarURL() || interaction.user.defaultAvatarURL,
+        name: interaction.user.username + '#' + interaction.user.discriminator
       },
       description: preview.description,
       image,
