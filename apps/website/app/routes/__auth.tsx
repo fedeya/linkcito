@@ -12,18 +12,10 @@ export const loader = async ({ request }: LoaderArgs) => {
 
   const guilds = await getMutualGuilds(user);
 
-  return json(
-    {
-      user,
-      guilds
-    },
-    {
-      headers: {
-        'Cache-Control':
-          'private, max-age=60, s-maxage=0, stale-while-revalidate'
-      }
-    }
-  );
+  return json({
+    user,
+    guilds
+  });
 };
 
 export const meta: MetaFunction = () => ({
