@@ -1,4 +1,4 @@
-import type { LinksFunction, LoaderArgs, MetaFunction } from '@remix-run/node';
+import type { LoaderArgs, MetaFunction } from '@remix-run/node';
 import { json, Response } from '@remix-run/node';
 import { prisma } from '~/db.server';
 import {
@@ -6,7 +6,8 @@ import {
   Form,
   useSearchParams,
   useSubmit,
-  useTransition
+  useTransition,
+  useCatch
 } from '@remix-run/react';
 import LinkItem from '~/components/LinkItem';
 import { cn } from '~/lib/utils';
@@ -64,9 +65,13 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 };
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  return {
-    title: `${data.guild.name} - Linkcito`
-  };
+  if (data) {
+    return {
+      title: `${data.guild?.name} - Linkcito`
+    };
+  }
+
+  return {};
 };
 
 export default function GuildPage() {
@@ -144,9 +149,26 @@ export default function GuildPage() {
 }
 
 export function CatchBoundary() {
+  const caught = useCatch();
+
+  if (caught.status === 404) {
+    return (
+      <div className="flex flex-col gap-4 items-center justify-center h-full">
+        <h1 className="text-3xl text-white font-semibold">Guild not found</h1>
+
+        <a
+          className="bg-action w-fit px-8 py-3 rounded-md text-lg font-medium text-center text-white"
+          href="https://discord.com/api/oauth2/authorize?client_id=1037163235901722705&permissions=277025392640&scope=bot"
+        >
+          Invite bot
+        </a>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <h1 className="text-3xl md:text-4xl text-white font-semibold">
+      <h1 className="text-3xl mx-auto text-center pt-8 md:text-4xl text-white font-semibold">
         Oops, something went wrong
       </h1>
     </div>
