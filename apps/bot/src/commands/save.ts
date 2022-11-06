@@ -19,9 +19,6 @@ export default class SaveCommand implements Command {
     .addStringOption(option =>
       option.setName('name').setDescription('optional custom name of link')
     )
-    .addStringOption(option =>
-      option.setName('tags').setDescription('tags separed by space')
-    )
     .addBooleanOption(option =>
       option.setName('preview').setDescription('show link preview')
     );
