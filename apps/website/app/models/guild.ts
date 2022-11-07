@@ -95,8 +95,7 @@ export async function getMutualGuilds(user: User) {
 
   return userGuilds.filter(
     guild =>
-      (guild.permissions & 0x08) === 0x08 ||
-      guild.owner ||
+      ((guild.permissions & 0x08) === 0x08 || guild.owner) &&
       botGuilds.some(botGuild => botGuild.id === guild.id)
   );
 }

@@ -8,7 +8,7 @@ const Button: FC<ButtonProps> = ({ children, ...props }) => {
     <button
       {...props}
       className={cn(
-        'bg-action shadow-md flex-1 justify-end hover:opacity-80 transition-all ease-in rounded-md px-4 py-2 font-medium text-white',
+        'bg-action shadow-md justify-end hover:opacity-80 transition-all ease-in rounded-md px-4 py-2 font-medium text-white',
         props.className
       )}
     >

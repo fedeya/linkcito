@@ -65,7 +65,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 };
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  if (data) {
+  if (data?.guild) {
     return {
       title: `${data.guild?.name} - Linkcito`
     };

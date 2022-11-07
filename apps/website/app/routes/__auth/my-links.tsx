@@ -17,6 +17,9 @@ export const loader = async ({ request }: LoaderArgs) => {
     },
     include: {
       links: {
+        orderBy: {
+          createdAt: 'desc'
+        },
         include: {
           guild: {
             select: {

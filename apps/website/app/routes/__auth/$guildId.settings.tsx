@@ -6,9 +6,10 @@ import { auth } from '~/lib/auth.server';
 import invariant from 'tiny-invariant';
 import { prisma } from '~/db.server';
 import { useEffect, useRef } from 'react';
-import { HiExternalLink } from 'react-icons/hi';
+import { HiExternalLink, HiTrash, HiUserRemove } from 'react-icons/hi';
 import { getMutualGuilds } from '~/models/guild';
 import Button from '~/components/Button';
+import TagSetting from '~/components/TagSetting';
 
 export const loader = async ({ request, params }: LoaderArgs) => {
   invariant(typeof params.guildId === 'string', 'invalid params');
@@ -41,7 +42,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
 };
 
 export const meta: MetaFunction<typeof loader> = ({ data }) => {
-  if (data) {
+  if (data?.guild) {
     return {
       title: `${data.guild?.name} Settings - Linkcito`
     };
@@ -53,9 +54,13 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
 export const action: ActionFunction = async ({ request, params }) => {
   invariant(params.guildId, 'Invalid params');
 
-  const { action, name } = Object.fromEntries(await request.formData());
+  const formData = Object.fromEntries(await request.formData());
+
+  const { action } = formData;
 
   if (action === 'add') {
+    const { name } = formData;
+
     invariant(name, 'name required');
 
     await prisma.tag.create({
@@ -64,6 +69,40 @@ export const action: ActionFunction = async ({ request, params }) => {
         guildId: params.guildId
       }
     });
+
+    return json({ ok: true });
+  }
+
+  if (action === 'remove') {
+    const { id, deleteLinks } = formData;
+
+    invariant(id, 'id required');
+
+    const promises: Promise<any>[] = [];
+
+    if (deleteLinks === 'on') {
+      promises.push(
+        prisma.link.deleteMany({
+          where: {
+            tags: {
+              some: {
+                id: id.toString()
+              }
+            }
+          }
+        })
+      );
+    }
+
+    promises.push(
+      prisma.tag.delete({
+        where: {
+          id: id.toString()
+        }
+      })
+    );
+
+    await Promise.all(promises);
 
     return json({ ok: true });
   }
@@ -131,9 +170,7 @@ export default function GuildSettings() {
 
         <div className="flex gap-4 flex-wrap">
           {guild?.tags.map(tag => (
-            <div key={tag.id} className="bg-primary-600 rounded-md px-4 py-2">
-              #{tag.name}
-            </div>
+            <TagSetting key={tag.id} name={tag.name} id={tag.id} />
           ))}
         </div>
 
