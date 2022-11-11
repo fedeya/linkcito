@@ -1,5 +1,6 @@
 import type { User } from './user';
 import { cache } from '~/lib/cache.server';
+import { prisma } from '~/db.server';
 
 export interface UserGuild {
   name: string;
@@ -56,8 +57,6 @@ export async function getUserGuilds(user: User): Promise<UserGuild[]> {
       return parsedGuilds;
     }
   }
-
-  console.log('here');
 
   const res = await fetch('https://discord.com/api/users/@me/guilds', {
     headers: {
@@ -124,3 +123,54 @@ export async function getGuildRoles(
 
   return res.json();
 }
+
+export type GetGuildWithLinksParams = {
+  guildId: string;
+  linkCursorId?: string;
+  tags: string[];
+};
+
+export const getGuildWithLinks = async (params: GetGuildWithLinksParams) => {
+  const { guildId, tags, linkCursorId } = params;
+
+  const take = 40;
+
+  const where =
+    tags && tags.length > 0
+      ? {
+          tags: {
+            some: {
+              name: {
+                in: tags
+              }
+            }
+          }
+        }
+      : undefined;
+
+  const cursor = linkCursorId ? { id: linkCursorId } : undefined;
+
+  const guild = await prisma.guild.findUnique({
+    where: { id: guildId },
+    include: {
+      tags: true,
+      links: {
+        take,
+        cursor,
+        skip: cursor ? 1 : 0,
+        where,
+        include: {
+          tags: true,
+          author: {
+            select: {
+              name: true,
+              image: true
+            }
+          }
+        }
+      }
+    }
+  });
+
+  return guild;
+};

@@ -19,6 +19,9 @@ export default class SaveCommand implements Command {
     .addStringOption(option =>
       option.setName('name').setDescription('optional custom name of link')
     )
+    .addStringOption(option =>
+      option.setName('description').setDescription('link description')
+    )
     .addBooleanOption(option =>
       option.setName('preview').setDescription('show link preview')
     );
@@ -33,6 +36,7 @@ export default class SaveCommand implements Command {
 
     // const tags = (interaction.options.get('tags')?.value as string)?.split(' ');
     const showPreview = interaction.options.get('preview')?.value as boolean;
+    const description = interaction.options.get('description')?.value as string;
 
     const content = 'saved link!';
 
@@ -43,7 +47,7 @@ export default class SaveCommand implements Command {
 
     const preview = await getPreview(previewLink);
 
-    await interaction.deferReply({ ephemeral: true });
+    await interaction.deferReply({ ephemeral: !showPreview });
 
     const image =
       preview.images &&
@@ -73,7 +77,7 @@ export default class SaveCommand implements Command {
           interaction.user.avatarURL() || interaction.user.defaultAvatarURL,
         name: interaction.user.username + '#' + interaction.user.discriminator
       },
-      description: preview.description,
+      description: description ?? preview.description,
       image,
       name: interaction.options.get('name')?.value as string,
       title: preview.title
@@ -105,7 +109,7 @@ export default class SaveCommand implements Command {
     if (showPreview) {
       const embed = new EmbedBuilder()
         .setTitle(preview.title || null)
-        .setDescription(preview.description || null)
+        .setDescription(description ?? (preview.description || null))
         .setURL(previewLink)
         .setColor('Random')
         .setAuthor({

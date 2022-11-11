@@ -62,6 +62,7 @@ importers:
       react: ^18.2.0
       react-dom: ^18.2.0
       react-icons: ^4.6.0
+      react-virtuoso: ^3.1.2
       remix-auth: ^3.3.0
       remix-auth-discord: ^1.0.0
       tailwind-merge: ^1.8.0
@@ -82,6 +83,7 @@ importers:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-icons: 4.6.0_react@18.2.0
+      react-virtuoso: 3.1.2_biqbaboplfbrettd7655fr4n2y
       remix-auth: 3.3.0_@remix-run+react@1.7.4
       remix-auth-discord: 1.0.0_@remix-run+react@1.7.4
       tailwind-merge: 1.8.0
@@ -2634,6 +2636,20 @@ packages:
       ajv: 8.6.3
       json-schema-to-ts: 1.6.4
       ts-morph: 12.0.0
+    dev: false
+
+  /@virtuoso.dev/react-urx/0.2.13_react@18.2.0:
+    resolution: {integrity: sha512-MY0ugBDjFb5Xt8v2HY7MKcRGqw/3gTpMlLXId2EwQvYJoC8sP7nnXjAxcBtTB50KTZhO0SbzsFimaZ7pSdApwA==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>=16'
+    dependencies:
+      '@virtuoso.dev/urx': 0.2.13
+      react: 18.2.0
+    dev: false
+
+  /@virtuoso.dev/urx/0.2.13:
+    resolution: {integrity: sha512-iirJNv92A1ZWxoOHHDYW/1KPoi83939o83iUBQHIim0i3tMeSKEh+bxhJdTHQ86Mr4uXx9xGUTq69cp52ZP8Xw==}
     dev: false
 
   /@web3-storage/multipart-parser/1.0.0:
@@ -8160,6 +8176,19 @@ packages:
       invariant: 2.2.4
       react: 18.2.0
       tslib: 2.4.1
+    dev: false
+
+  /react-virtuoso/3.1.2_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-/YRzJrQUuDSNTfbtD6JRTDRFR7FunrlbXoiCyKz3AXp36gmqSwULHEoX6FqMYPYow2XJjATs5A5/P9iTTVSfhQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>=16 || >=17 || >= 18'
+      react-dom: '>=16 || >=17 || >= 18'
+    dependencies:
+      '@virtuoso.dev/react-urx': 0.2.13_react@18.2.0
+      '@virtuoso.dev/urx': 0.2.13
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /react/18.2.0:

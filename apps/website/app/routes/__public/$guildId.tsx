@@ -1,6 +1,5 @@
 import type { LoaderArgs, MetaFunction } from '@remix-run/node';
 import { json, Response } from '@remix-run/node';
-import { prisma } from '~/db.server';
 import {
   useLoaderData,
   Form,
@@ -9,45 +8,18 @@ import {
   useTransition,
   useCatch
 } from '@remix-run/react';
-import LinkItem from '~/components/LinkItem';
 import { cn } from '~/lib/utils';
+import LinksList from '~/components/LinksList';
+import { getGuildWithLinks } from '../../models/guild';
 
 export const loader = async ({ params, request }: LoaderArgs) => {
   const url = new URL(request.url);
 
   const tags = url.searchParams.getAll('tag');
 
-  const where =
-    tags && tags.length > 0
-      ? {
-          tags: {
-            some: {
-              name: {
-                in: tags
-              }
-            }
-          }
-        }
-      : undefined;
-
-  const guild = await prisma.guild.findUnique({
-    where: { id: params.guildId },
-    include: {
-      tags: true,
-      links: {
-        take: 40,
-        where,
-        include: {
-          tags: true,
-          author: {
-            select: {
-              name: true,
-              image: true
-            }
-          }
-        }
-      }
-    }
+  const guild = await getGuildWithLinks({
+    guildId: params.guildId as string,
+    tags
   });
 
   if (!guild) throw new Response('Not found', { status: 404 });
@@ -127,22 +99,15 @@ export default function GuildPage() {
           </fieldset>
         </Form>
 
-        <div className="w-full space-y-4 max-w-5xl mx-auto">
-          {transition.state === 'idle' &&
-            guild.links.map(link => (
-              <LinkItem key={link.id} link={link as any} />
-            ))}
-
-          {transition.state === 'submitting' &&
-            new Array(guild.links.length === 0 ? 5 : guild.links.length)
-              .fill(1)
-              .map((_, i) => (
-                <div
-                  key={i}
-                  className="h-12 w-full rounded-md bg-secondary animate-pulse"
-                />
-              ))}
-        </div>
+        <LinksList
+          isSubmitting={
+            transition.state === 'submitting' &&
+            Array.isArray(transition.submission.formData.getAll('tag'))
+          }
+          guildId={guild.id}
+          tags={tags as string[]}
+          links={guild.links as any}
+        />
       </div>
     </div>
   );
