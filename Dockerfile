@@ -12,7 +12,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN pnpm install
+RUN pnpm install --frozen-lockfile --filter=bot 
 
 RUN npx turbo run build --filter=bot
 RUN pnpm generate
