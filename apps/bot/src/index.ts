@@ -3,19 +3,31 @@ import {
   Routes,
   Client,
   GatewayIntentBits,
-  Collection
+  Collection,
+  ButtonBuilder,
+  ButtonStyle,
+  ActionRowBuilder
 } from 'discord.js';
 import { Client as IClient, Command } from './typings';
 import path from 'node:path';
 import { config } from 'dotenv';
 import glob from 'glob';
 import { prisma } from '@linkcito/db';
+import { isURL, getPreview } from './utils';
+import { createLink } from './lib/api';
 
 config({
   path: path.join(__dirname, '..', '..', '..', '.env')
 });
 
-const client: IClient = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client: IClient = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    // GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
+  ]
+});
 
 client.commands = new Collection();
 
@@ -61,6 +73,35 @@ const rest = new REST({ version: '10' }).setToken(TOKEN);
   }
 })();
 
+client.on('messageCreate', async message => {
+  if (message.author.bot) return;
+
+  const args = message.content.split(' ');
+
+  const link = args.find(text => isURL(text));
+
+  if (link) {
+    const saveButton = new ButtonBuilder()
+      .setCustomId('save')
+      .setLabel('Save')
+      .setStyle(ButtonStyle.Primary);
+
+    const cancelButton = new ButtonBuilder()
+      .setCustomId('cancel')
+      .setLabel('Cancel')
+      .setStyle(ButtonStyle.Secondary);
+
+    const row = new ActionRowBuilder()
+      .addComponents(cancelButton)
+      .addComponents(saveButton);
+
+    await message.reply({
+      content: 'you want to save this link? `' + link + '`',
+      components: [row as any]
+    });
+  }
+});
+
 client.on('guildCreate', async guild => {
   console.log('Created guild', guild.name, guild.id);
 
@@ -101,9 +142,76 @@ client.on('interactionCreate', async interaction => {
     }
   }
 
-  if (interaction.isSelectMenu()) {
-    console.log(interaction.customId, interaction.values);
+  if (interaction.isButton()) {
+    if (interaction.customId === 'cancel') {
+      await interaction.message.delete();
 
+      await interaction.deferReply();
+
+      await interaction.deleteReply();
+
+      return;
+    }
+
+    try {
+      if (interaction.customId === 'save') {
+        const link = interaction.message.content.split('`')[1];
+
+        await interaction.message.delete();
+
+        await interaction.deferReply({ ephemeral: true });
+
+        const previewLink =
+          link.includes('https') || link.includes('http')
+            ? link
+            : `https://${link}`;
+
+        const preview = await getPreview(previewLink);
+
+        const image =
+          preview.images &&
+          Array.isArray(preview.images) &&
+          preview.images.length > 0
+            ? preview.images[0]
+            : null;
+
+        await createLink({
+          title: preview.title,
+          description: preview.description,
+          icon:
+            preview.favicons &&
+            Array.isArray(preview.favicons) &&
+            preview.favicons.length > 0
+              ? preview.favicons[0]
+              : null,
+          image: image,
+          url: preview.url,
+          user: {
+            id: interaction.user.id,
+            name:
+              interaction.user.username + '#' + interaction.user.discriminator,
+            image: interaction.user.avatarURL() || null
+          },
+          guild: {
+            id: interaction.guildId as string,
+            name: interaction.guild?.name!,
+            image: interaction.guild?.iconURL() || null
+          }
+        });
+
+        await interaction.editReply({
+          content: 'Link saved!'
+        });
+      }
+    } catch (err) {
+      await interaction.editReply({
+        content: 'There was an error while saving this link!'
+      });
+      return;
+    }
+  }
+
+  if (interaction.isSelectMenu()) {
     const linkId = interaction.customId;
 
     await prisma.link.update({
