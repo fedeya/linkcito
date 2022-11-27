@@ -11,6 +11,7 @@ import {
 import styles from '~/styles/tailwind.css';
 import { Analytics } from '@vercel/analytics/react';
 import { MetronomeLinks } from '@metronome-sh/react';
+import appStyles from '~/styles/app.css';
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
@@ -20,26 +21,42 @@ export const meta: MetaFunction = () => ({
 
 export const links: LinksFunction = () => [
   {
+    rel: 'preload',
+    as: 'font',
+    href: '/fonts/roboto-500.woff2',
+    type: 'font/woff2',
+    crossOrigin: 'anonymous'
+  },
+  {
+    rel: 'preload',
+    as: 'font',
+    href: '/fonts/roboto-regular.woff2',
+    type: 'font/woff2',
+    crossOrigin: 'anonymous'
+  },
+  {
+    rel: 'preload',
+    as: 'font',
+    href: '/fonts/roboto-700.woff2',
+    type: 'font/woff2',
+    crossOrigin: 'anonymous'
+  },
+  {
     rel: 'icon',
     type: 'image/png',
     href: '/favicon.png'
+  },
+  {
+    rel: 'canonical',
+    href: 'https://linkcito.xyz'
   },
   {
     rel: 'stylesheet',
     href: styles
   },
   {
-    rel: 'preconnect',
-    href: 'https://fonts.googleapis.com'
-  },
-  {
-    rel: 'preconnect',
-    href: 'https://fonts.gstatic.com',
-    crossOrigin: 'anonymous'
-  },
-  {
-    href: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap',
-    rel: 'stylesheet'
+    rel: 'stylesheet',
+    href: appStyles
   }
 ];
 
