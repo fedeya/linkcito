@@ -14,15 +14,14 @@ interface CacheProvider {
 
 export let cache: CacheProvider;
 
-if (global.__cache) {
-  cache = global.__cache;
-} else {
+if (!global.__cache) {
   global.__cache =
     process.env.NODE_ENV === 'development'
       ? createLRUCacheProvider()
       : createRedisCacheProvider();
-  cache = global.__cache;
 }
+
+cache = global.__cache;
 
 export function createRedisCacheProvider(): CacheProvider {
   if (!process.env.REDIS_URL) {
