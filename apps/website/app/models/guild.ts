@@ -159,6 +159,9 @@ export const getGuildWithLinks = async (params: GetGuildWithLinksParams) => {
         cursor,
         skip: cursor ? 1 : 0,
         where,
+        orderBy: {
+          createdAt: 'desc'
+        },
         include: {
           tags: true,
           author: {
