@@ -9,15 +9,14 @@ import {
   useCatch
 } from '@remix-run/react';
 import styles from '~/styles/tailwind.css';
-import { inject } from '@vercel/analytics';
+import { Analytics } from '@vercel/analytics/react';
+import { MetronomeLinks } from '@metronome-sh/react';
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
   title: 'Linkcito',
   viewport: 'width=device-width,initial-scale=1'
 });
-
-inject();
 
 export const links: LinksFunction = () => [
   {
@@ -50,12 +49,14 @@ export default function App() {
       <head>
         <Meta />
         <Links />
+        <MetronomeLinks />
       </head>
       <body>
         <Outlet />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        <Analytics />
       </body>
     </html>
   );
