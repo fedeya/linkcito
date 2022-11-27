@@ -15,8 +15,8 @@ import appStyles from '~/styles/app.css';
 
 export const meta: MetaFunction = () => ({
   charset: 'utf-8',
-  title: 'Linkcito',
-  description: 'discord bot to save cool links',
+  title: 'Linkcito: Discord Bot',
+  description: 'Linkcito is a discord bot to save cool links',
   viewport: 'width=device-width,initial-scale=1'
 });
 
