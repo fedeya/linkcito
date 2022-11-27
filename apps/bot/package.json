@@ -13,13 +13,13 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@linkcito/tsconfig": "*",
     "@types/glob": "^8.0.0",
     "@types/node": "^18.11.9",
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
     "tsup": "^6.3.0",
-    "typescript": "^4.8.4",
-    "@linkcito/tsconfig": "*"
+    "typescript": "^4.8.4"
   },
   "dependencies": {
     "@linkcito/db": "*",

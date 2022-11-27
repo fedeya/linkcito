@@ -214,6 +214,8 @@ client.on('interactionCreate', async interaction => {
   if (interaction.isSelectMenu()) {
     const linkId = interaction.customId;
 
+    await interaction.deferUpdate();
+
     await prisma.link.update({
       where: {
         id: linkId
@@ -227,9 +229,9 @@ client.on('interactionCreate', async interaction => {
       }
     });
 
-    await interaction.reply({
+    await interaction.editReply({
       content: 'Tags saved!',
-      ephemeral: true
+      components: []
     });
   }
 });

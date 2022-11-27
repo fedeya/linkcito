@@ -93,6 +93,7 @@ export default class SaveCommand implements Command {
       const select = new SelectMenuBuilder()
         .setCustomId(id)
         .setMinValues(1)
+        .setMaxValues(1)
         .setPlaceholder('Select tags')
         .addOptions(
           tags.map(tag => ({

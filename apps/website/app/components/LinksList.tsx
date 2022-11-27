@@ -37,6 +37,10 @@ const LinksList: FC<LinksListProps> = ({
   const fetcher = useFetcher();
 
   useEffect(() => {
+    setItems(links);
+  }, [links]);
+
+  useEffect(() => {
     if (fetcher.data && fetcher.data.links && fetcher.data.links.length === 0) {
       setShouldFetch(false);
       return;
