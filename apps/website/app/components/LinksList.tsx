@@ -73,11 +73,13 @@ const LinksList: FC<LinksListProps> = ({
       {!isSubmitting && (
         <Virtuoso
           useWindowScroll
-          data={items}
+          overscan={200}
+          initialItemCount={items.length}
+          totalCount={items.length}
           endReached={loadMore}
           components={{ List }}
-          itemContent={(index, link) => (
-            <LinkItem key={link.id} link={link as any} />
+          itemContent={index => (
+            <LinkItem key={items[index].id} link={items[index]} />
           )}
         />
       )}
