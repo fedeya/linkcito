@@ -15,12 +15,9 @@ async function timeout(ms: number) {
 }
 
 export async function getBotGuilds(): Promise<UserGuild[]> {
-  const guilds = await cache.get('bot-guilds');
+  const guilds = await cache.get<UserGuild[]>('bot-guilds');
 
-  if (guilds) {
-    console.log('returning bot guilds from cache');
-    return JSON.parse(guilds);
-  }
+  if (guilds) return guilds;
 
   const res = await fetch('https://discord.com/api/users/@me/guilds', {
     headers: {
@@ -40,23 +37,15 @@ export async function getBotGuilds(): Promise<UserGuild[]> {
 
   const data = await res.json();
 
-  await cache.set('bot-guilds', JSON.stringify(data), 'EX', 120);
+  await cache.set('bot-guilds', data, 120);
 
   return data;
 }
 
 export async function getUserGuilds(user: User): Promise<UserGuild[]> {
-  const guilds = await cache.get(`user-guilds-${user.profile.id}`);
+  const guilds = await cache.get<UserGuild[]>(`user-guilds-${user.profile.id}`);
 
-  if (guilds) {
-    const parsedGuilds = JSON.parse(guilds);
-
-    if (parsedGuilds && Array.isArray(parsedGuilds)) {
-      console.log('returning user cached guilds');
-
-      return parsedGuilds;
-    }
-  }
+  if (guilds && Array.isArray(guilds)) return guilds;
 
   const res = await fetch('https://discord.com/api/users/@me/guilds', {
     headers: {
@@ -76,12 +65,7 @@ export async function getUserGuilds(user: User): Promise<UserGuild[]> {
 
   const data = await res.json();
 
-  await cache.set(
-    `user-guilds-${user.profile.id}`,
-    JSON.stringify(data),
-    'EX',
-    120
-  );
+  await cache.set(`user-guilds-${user.profile.id}`, data, 120);
 
   return data;
 }
@@ -133,6 +117,15 @@ export type GetGuildWithLinksParams = {
 export const getGuildWithLinks = async (params: GetGuildWithLinksParams) => {
   const { guildId, tags, linkCursorId } = params;
 
+  const key = `guild-${guildId}-${linkCursorId}-${tags.join('-')}`;
+
+  const cached = await cache.get(key);
+
+  if (cached) {
+    console.log(cached);
+    return cached as never;
+  }
+
   const take = 40;
 
   const where =
@@ -174,6 +167,8 @@ export const getGuildWithLinks = async (params: GetGuildWithLinksParams) => {
       }
     }
   });
+
+  await cache.set(key, guild, 60);
 
   return guild;
 };
